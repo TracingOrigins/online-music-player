@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线音乐播放器</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="music-player">
+        <div class="background"></div>
+
+        <div class="player-content">
+            <div class="theme-switch">
+                <button id="themeBtn"><i class="ri-sun-line"></i></button>
+            </div>
+
+            <div class="song-info">
+                <h2 class="song-title">歌曲名称</h2>
+                <p class="artist">歌手</p>
+            </div>
+
+            <div class="controls">
+                <button id="prevBtn"><i class="ri-skip-back-fill"></i></button>
+                <button id="playBtn"><i class="ri-play-fill"></i></button>
+                <button id="nextBtn"><i class="ri-skip-forward-fill"></i></button>
+            </div>
+
+            <div class="speed-control">
+                <button id="speedBtn"><i class="ri-speed-line"></i></button>
+                <div class="speed-options">
+                    <div class="speed-option" data-speed="0.5">0.5x</div>
+                    <div class="speed-option" data-speed="0.75">0.75x</div>
+                    <div class="speed-option" data-speed="1.0">1.0x</div>
+                    <div class="speed-option" data-speed="1.25">1.25x</div>
+                    <div class="speed-option" data-speed="1.5">1.5x</div>
+                    <div class="speed-option" data-speed="2.0">2.0x</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
+
+            <div class="time">
+                <span class="current-time">0:00</span>
+                <span class="duration">0:00</span>
+            </div>
+
+            <div class="lyrics">
+                <div class="lyrics-wrapper">
+                    <!-- 歌词将在这里显示 -->
+                </div>
+            </div>
+        </div>
+
+        <audio id="audio" src="周杰伦 - 爱在西元前.mp3"></audio>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
