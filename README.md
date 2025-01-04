@@ -21,7 +21,7 @@ An online music player.
 
 ## 维护
 
-主要就是在 getLyrics.js 中根据歌词名称获取歌词信息，在 script.js 中添加。
+主要就是在 get-playlist.js 中根据歌词名称获取歌词信息，在 script.js 中添加。
 
 1. 先把歌曲、歌词、背景图准备好
 2. 然后用get-playlist.js去获取playlist
