@@ -38,13 +38,13 @@ Place your music files in the project directory:
 2. Use get-playlist.js to get the playlist
 3. Replace the playlist in the script.js
 
-## Contact
+### Contact
 You are welcome to make suggestions, and you are welcome to mention PR.
 
-## Donation
+### Donation
 If you like this project, you are welcome to donate.
 
-## Thanks
+### Thanks
 Thank you for your support and encouragement.
 
 ---
@@ -85,11 +85,11 @@ Thank you for your support and encouragement.
 2. 用get-playlist.js去获取playlist
 3. 替换script.js里面的playlist
 
-## 联系
+### 联系
 
 欢迎大家提建议，欢迎大家提 PR。
 
-## 捐赠
+### 捐赠
 
 如果你喜欢这个项目，欢迎捐赠。
 
