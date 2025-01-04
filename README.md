@@ -1,23 +1,88 @@
-# online-music-player
-An online music player.
+# Online Music Player | 在线音乐播放器
 
-## 简介
+[English](#english) | [中文](#中文)
 
-在线音乐播放器
+## English
 
-## 使用
+### Introduction
+A modern web-based music player with lyrics synchronization feature.
 
-现在的快捷键功能：
+### Features
+- 🎵 Music playback with synchronized lyrics display
+- 🎨 Light/Dark theme support
+- ⌨️ Keyboard shortcuts support
+- 📱 Mobile-friendly design
+- 🔄 Multiple playback speed options
+- 🖱️ Interactive lyrics with click-to-play
+- 🎯 Auto-scrolling lyrics with manual override
 
-1. Ctrl + →：快进 15 秒
-2. Ctrl + ←：快退 15 秒
-3. →：快进 5 秒
-4. ←：快退 5 秒
-5. PageUp：上一首
-6. PageDown：下一首
-7. Space：播放/暂停
+### Keyboard Shortcuts
+- `Space`: Play/Pause
+- `PageUp`: Previous song
+- `PageDown`: Next song
+- `←`: Rewind 5 seconds
+- `→`: Forward 5 seconds
+- `Ctrl + ←`: Rewind 15 seconds
+- `Ctrl + →`: Forward 15 seconds
 
-这样就能通过 Ctrl + 方向键来快速调整播放进度了。
+### File Format Support
+- Audio: `.mp3`
+- Lyrics: `.lrc`
+- Background: `.png`
+
+### Usage
+1. Place your music files in the project directory:
+   - Song format: `Artist - Title.mp3`
+   - Lyrics format: `Artist - Title.lrc`
+   - Background image: `Artist - Title.png`
+2. Run the server:
+   ```bash
+   npm install
+   npm start
+   ```
+3. Open `http://localhost:3000` in your browser
+
+---
+
+## 中文
+
+### 简介
+一个现代化的网页音乐播放器，支持歌词同步显示。
+
+### 功能特点
+- 🎵 音乐播放与歌词同步
+- 🎨 明暗主题切换
+- ⌨️ 键盘快捷键
+- 📱 移动端适配
+- 🔄 多种播放速度
+- 🖱️ 歌词点击播放
+- 🎯 自动滚动歌词（可手动控制）
+
+### 键盘快捷键
+- `空格键`: 播放/暂停
+- `PageUp`: 上一首
+- `PageDown`: 下一首
+- `←`: 快退 5 秒
+- `→`: 快进 5 秒
+- `Ctrl + ←`: 快退 15 秒
+- `Ctrl + →`: 快进 15 秒
+
+### 支持的文件格式
+- 音频：`.mp3`
+- 歌词：`.lrc`
+- 背景：`.png`
+
+### 使用方法
+1. 将音乐文件放入项目目录：
+   - 歌曲格式：`歌手 - 歌名.mp3`
+   - 歌词格式：`歌手 - 歌名.lrc`
+   - 背景图片：`歌手 - 歌名.png`
+2. 运行服务器：
+   ```bash
+   npm install
+   npm start
+   ```
+3. 在浏览器中打开 `http://localhost:3000`
 
 ## 维护
 
