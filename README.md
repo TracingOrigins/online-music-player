@@ -31,16 +31,21 @@ A modern web-based music player with lyrics synchronization feature.
 - Background: `.png`
 
 ### Usage
-1. Place your music files in the project directory:
+Place your music files in the project directory:
    - Song format: `Artist - Title.mp3`
    - Lyrics format: `Artist - Title.lrc`
    - Background image: `Artist - Title.png`
-2. Run the server:
-   ```bash
-   npm install
-   npm start
-   ```
-3. Open `http://localhost:3000` in your browser
+2. Use get-playlist.js to get the playlist
+3. Replace the playlist in the script.js
+
+## Contact
+You are welcome to make suggestions, and you are welcome to mention PR.
+
+## Donation
+If you like this project, you are welcome to donate.
+
+## Thanks
+Thank you for your support and encouragement.
 
 ---
 
@@ -77,20 +82,8 @@ A modern web-based music player with lyrics synchronization feature.
    - 歌曲格式：`歌手 - 歌名.mp3`
    - 歌词格式：`歌手 - 歌名.lrc`
    - 背景图片：`歌手 - 歌名.png`
-2. 运行服务器：
-   ```bash
-   npm install
-   npm start
-   ```
-3. 在浏览器中打开 `http://localhost:3000`
-
-## 维护
-
-主要就是在 get-playlist.js 中根据歌词名称获取歌词信息，在 script.js 中添加。
-
-1. 先把歌曲、歌词、背景图准备好
-2. 然后用get-playlist.js去获取playlist
-3. 然后替换script.js里面的playlist就好了
+2. 用get-playlist.js去获取playlist
+3. 替换script.js里面的playlist
 
 ## 联系
 
