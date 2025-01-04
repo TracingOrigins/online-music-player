@@ -86,13 +86,10 @@ Thank you for your support and encouragement.
 3. 替换script.js里面的playlist
 
 ### 联系
-
 欢迎大家提建议，欢迎大家提 PR。
 
 ### 捐赠
-
 如果你喜欢这个项目，欢迎捐赠。
 
 ### 鸣谢
-
 感谢大家的支持和鼓励。
