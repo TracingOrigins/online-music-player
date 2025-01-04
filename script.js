@@ -124,45 +124,28 @@ class MusicPlayer {
             }
         });
 
-        // 添加触摸事件处理
-        this.lyrics.addEventListener('touchstart', () => {
+        // 添加歌词容器的鼠标事件
+        this.lyrics.addEventListener('mouseenter', () => {
             this.autoScroll = false;
         });
 
-        this.lyrics.addEventListener('touchend', () => {
-            // 延迟一段时间后再恢复自动滚动，避免触摸结束后立即跳转
-            setTimeout(() => {
-                this.autoScroll = true;
-            }, 5000); // 5秒后恢复自动滚动
+        this.lyrics.addEventListener('mouseleave', () => {
+            this.autoScroll = true;
         });
 
-        // 防止触摸滚动时触发点击事件
-        let touchStartY = 0;
-        let isTouchMove = false;
-
-        this.lyrics.addEventListener('touchstart', (e) => {
-            touchStartY = e.touches[0].clientY;
-            isTouchMove = false;
-        });
-
-        this.lyrics.addEventListener('touchmove', (e) => {
-            const touchMoveY = e.touches[0].clientY;
-            if (Math.abs(touchMoveY - touchStartY) > 10) { // 10px的阈值
-                isTouchMove = true;
-            }
-        });
-
-        this.lyrics.addEventListener('touchend', (e) => {
-            if (!isTouchMove) {
-                // 如果不是滑动，而是点击，则处理点击事件
-                const lyricLine = e.target.closest('.lyric-line');
-                if (lyricLine) {
-                    const time = parseFloat(lyricLine.dataset.time);
-                    if (!isNaN(time)) {
-                        this.audio.currentTime = time;
-                        if (!this.isPlaying) {
-                            this.togglePlay();
-                        }
+        // 添加歌词点击事件
+        this.lyrics.addEventListener('click', (e) => {
+            // 检查点击的是否是歌词行
+            const lyricLine = e.target.closest('.lyric-line');
+            if (lyricLine) {
+                // 获取歌词的时间点
+                const time = parseFloat(lyricLine.dataset.time);
+                if (!isNaN(time)) {
+                    // 设置音频播放时间
+                    this.audio.currentTime = time;
+                    // 如果当前是暂停状态，自动开始播放
+                    if (!this.isPlaying) {
+                        this.togglePlay();
                     }
                 }
             }
