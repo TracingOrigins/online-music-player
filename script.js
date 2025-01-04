@@ -124,7 +124,10 @@ class MusicPlayer {
             }
         });
 
-        // 添加歌词容器的鼠标事件
+        // 定义一个计时器变量
+        let autoScrollTimer;
+
+        // PC端鼠标事件
         this.lyrics.addEventListener('mouseenter', () => {
             this.autoScroll = false;
         });
@@ -133,12 +136,10 @@ class MusicPlayer {
             this.autoScroll = true;
         });
 
-        // 添加歌词点击事件
+        // 添加PC端歌词点击事件
         this.lyrics.addEventListener('click', (e) => {
-            // 检查点击的是否是歌词行
             const lyricLine = e.target.closest('.lyric-line');
             if (lyricLine) {
-                // 获取歌词的时间点
                 const time = parseFloat(lyricLine.dataset.time);
                 if (!isNaN(time)) {
                     // 设置音频播放时间
@@ -146,6 +147,72 @@ class MusicPlayer {
                     // 如果当前是暂停状态，自动开始播放
                     if (!this.isPlaying) {
                         this.togglePlay();
+                    }
+                    // 高亮当前歌词
+                    this.updateLyrics(time);
+                }
+            }
+        });
+
+        // 移动端触摸事件
+        this.lyrics.addEventListener('touchstart', () => {
+            this.autoScroll = false;
+            // 清除之前的计时器
+            if (autoScrollTimer) {
+                clearTimeout(autoScrollTimer);
+            }
+        });
+
+        this.lyrics.addEventListener('touchend', () => {
+            // 清除之前的计时器
+            if (autoScrollTimer) {
+                clearTimeout(autoScrollTimer);
+            }
+            // 设置新的计时器
+            autoScrollTimer = setTimeout(() => {
+                this.autoScroll = true;
+            }, 5000); // 5秒后恢复自动滚动
+        });
+
+        // 处理触摸滚动
+        let touchStartY = 0;
+        let isTouchMove = false;
+
+        this.lyrics.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+            isTouchMove = false;
+            // 清除之前的计时器
+            if (autoScrollTimer) {
+                clearTimeout(autoScrollTimer);
+            }
+        });
+
+        this.lyrics.addEventListener('touchmove', (e) => {
+            const touchMoveY = e.touches[0].clientY;
+            if (Math.abs(touchMoveY - touchStartY) > 10) {
+                isTouchMove = true;
+                // 清除之前的计时器
+                if (autoScrollTimer) {
+                    clearTimeout(autoScrollTimer);
+                }
+                // 设置新的计时器
+                autoScrollTimer = setTimeout(() => {
+                    this.autoScroll = true;
+                }, 5000);
+            }
+        });
+
+        this.lyrics.addEventListener('touchend', (e) => {
+            if (!isTouchMove) {
+                // 如果不是滑动，而是点击，则处理点击事件
+                const lyricLine = e.target.closest('.lyric-line');
+                if (lyricLine) {
+                    const time = parseFloat(lyricLine.dataset.time);
+                    if (!isNaN(time)) {
+                        this.audio.currentTime = time;
+                        if (!this.isPlaying) {
+                            this.togglePlay();
+                        }
                     }
                 }
             }
