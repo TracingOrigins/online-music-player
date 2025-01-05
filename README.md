@@ -35,8 +35,12 @@ Place your music files in the project directory:
    - Song format: `Artist - Title.mp3`
    - Lyrics format: `Artist - Title.lrc`
    - Background image: `Artist - Title.png`
-2. Use get-playlist.js to get the playlist
-3. Replace the playlist in the script.js
+2. Run init.js to generate the playlist.json:
+   ```
+   node init.js
+   ```
+3. This will generate a playlist.json file containing all the song information and lyrics.
+4. The webpage will automatically load the playlist.json file and display the lyrics.
 
 ### Contact
 You are welcome to make suggestions, and you are welcome to mention PR.
@@ -82,8 +86,12 @@ Thank you for your support and encouragement.
    - 歌曲格式：`歌手 - 歌名.mp3`
    - 歌词格式：`歌手 - 歌名.lrc`
    - 背景图片：`歌手 - 歌名.png`
-2. 用get-playlist.js去获取playlist
-3. 替换script.js里面的playlist
+2. 运行 init.js 生成 playlist.json：
+   ```
+   node init.js
+   ```
+3. 这将生成 playlist.json 文件，包含所有歌曲信息和歌词
+4. 网页将自动加载 playlist.json 文件并显示歌词
 
 ### 联系
 欢迎大家提建议，欢迎大家提 PR。

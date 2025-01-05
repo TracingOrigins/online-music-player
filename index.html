@@ -5,6 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>在线音乐播放器</title>
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.documentElement.classList.add('dark-mode');
+        }
+    </script>
+    <style>
+        :root.dark-mode {
+            background-color: #1a1a1a;
+        }
+        body {
+            transition: background-color 0.3s ease;
+        }
+    </style>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 </head>
@@ -50,10 +64,8 @@
                 <span class="duration">0:00</span>
             </div>
 
-            <div class="lyrics">
-                <div class="lyrics-wrapper">
-                    <!-- 歌词将在这里显示 -->
-                </div>
+            <div class="lyrics-container">
+                <!-- 歌词将通过 JavaScript 动态插入到这里 -->
             </div>
         </div>
 

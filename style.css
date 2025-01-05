@@ -459,8 +459,79 @@ body {
 
 /* 添加歌词容器的内部包装 */
 .lyrics-wrapper {
-    padding: 175px 0;
-    min-height: 100%;
     width: 100%;
     box-sizing: border-box;
+    padding-top: 117px;
+    padding-bottom: 233px;
+    position: relative;
+}
+
+.lyrics-container {
+    flex: 1;
+    margin: 0;
+    padding: 20px;
+    overflow-y: auto;
+    text-align: center;
+    background: var(--lyrics-bg);
+    border-radius: 10px;
+    height: 350px;
+    position: relative;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.lyrics-wrapper {
+    width: 100%;
+    box-sizing: border-box;
+    padding-top: 117px;
+    padding-bottom: 233px;
+    position: relative;
+}
+
+.lyrics-line {
+    margin: 20px 0;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--text-color);
+    /* opacity: 0.6; */
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.lyrics-line:hover {
+    /* opacity: 0.8; */
+}
+
+.lyrics-line.active .line-fill {
+    opacity: 1;
+}
+
+.lyrics-line .line-content {
+    position: relative;
+    display: inline-block;
+}
+
+.lyrics-line .line-bg {
+    color: var(--text-color);
+    opacity: 0.5;
+}
+
+.lyrics-line .line-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--button-text);
+    overflow: hidden;
+    white-space: nowrap;
+    opacity: 1;
+    width: 0;
+    transition: width 0.1s linear;
+}
+
+.lyrics-line.active .line-bg {
+    opacity: 0.5;
+}
+
+.lyrics-line.active .line-fill {
+    opacity: 1;
 }
