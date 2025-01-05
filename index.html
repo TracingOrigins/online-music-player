@@ -21,6 +21,38 @@
     </style>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- 深色主题图标 -->
+    <link rel="icon" type="image/png" href="favicon-dark.png" media="(prefers-color-scheme: dark)">
+    <!-- 浅色主题图标 -->
+    <link rel="icon" type="image/png" href="favicon-light.png" media="(prefers-color-scheme: light)">
+
+    <!-- 动态切换图标的脚本 -->
+    <script>
+        // 监听系统主题变化
+        const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        
+        function updateFavicon() {
+            // 获取所有图标元素
+            const icons = document.querySelectorAll('link[rel="icon"]');
+            
+            // 根据当前主题显示/隐藏对应的图标
+            icons.forEach(icon => {
+                const mediaQuery = icon.getAttribute('media');
+                if (mediaQuery) {
+                    const matches = window.matchMedia(mediaQuery).matches;
+                    icon.disabled = !matches;
+                }
+            });
+        }
+
+        // 初始设置
+        updateFavicon();
+        
+        // 监听主题变化
+        darkModeMediaQuery.addListener(updateFavicon);
+    </script>
+    
 </head>
 
 <body>
