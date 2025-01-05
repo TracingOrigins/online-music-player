@@ -1,3 +1,6 @@
+let autoScrollTimer;
+const AUTO_SCROLL_DELAY = 5000; // 5秒后恢复自动滚动
+
 class MusicPlayer {
     constructor() {
         this.audio = document.getElementById('audio');
@@ -10,6 +13,7 @@ class MusicPlayer {
         this.songTitle = document.querySelector('.song-title');
         this.artist = document.querySelector('.artist');
         this.background = document.querySelector('.background');
+        this.lyricsElement = document.querySelector('.lyrics');
         this.lyricsContainer = document.querySelector('.lyrics-container');
         this.themeBtn = document.getElementById('themeBtn');
         this.currentTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -20,14 +24,16 @@ class MusicPlayer {
         this.playlist = [];
         this.currentSongIndex = 0;
         this.isPlaying = false;
+        this.lyricsWrapper = null;
 
         this.loadPlaylist().then(() => {
             if (this.playlist.length > 0) {
                 this.loadSong(this.currentSongIndex);
-        this.initializeTheme();
-        this.initializeEvents();
-        this.updateTheme();
-        this.initializeLyrics();
+                this.initializeTheme();
+                this.initializeEvents();
+                this.updateTheme();
+                this.initializeLyrics();
+                this.initializeTouchEvents();
             } else {
                 console.error('No songs in playlist');
             }
@@ -36,8 +42,6 @@ class MusicPlayer {
         });
 
         this.autoScroll = true;
-
-        // 添加鼠标悬停状态标志
         this.isHovering = false;
     }
 
@@ -291,14 +295,16 @@ class MusicPlayer {
                     }
                 }
                 
-                // 只在非悬停状态下自动滚动
-                if (!this.isHovering) {
-                    const containerRect = this.lyricsContainer.getBoundingClientRect();
-                    const oneThirdHeight = containerRect.height / 3;
-                    const scrollTop = activeLine.offsetTop - oneThirdHeight;
+                // 修改自动滚动逻辑：检查是否处于用户滚动状态
+                if (!this.isHovering && !this.lyricsElement.classList.contains('user-scrolling')) {
+                    const containerRect = this.lyricsElement.getBoundingClientRect();
+                    const oneThirdHeight = Math.floor(containerRect.height / 3);
                     
-                    this.lyricsContainer.scrollTo({
-                        top: scrollTop,
+                    // 计算目标滚动位置，确保当前歌词行位于容器上方1/3处
+                    const targetScrollTop = activeLine.offsetTop - oneThirdHeight;
+                    
+                    this.lyricsElement.scrollTo({
+                        top: Math.max(0, targetScrollTop), // 确保不会出现负值
                         behavior: 'smooth'
                     });
                 }
@@ -355,14 +361,13 @@ class MusicPlayer {
             
             // 创建所有歌词行
             const lyricsHTML = song.lyrics.map(lyric => {
-                // 移除所有格式的时间标签
                 const cleanText = lyric.text
-                    .replace(/\[\d+:\d+\.\d+\]/g, '')    // 移除 [mm:ss.xx] 格式
-                    .replace(/\[\d+:\d+\]/g, '')         // 移除 [mm:ss] 格式
-                    .replace(/\[.*?\]/g, '')             // 移除任何其他方括号内的内容
-                    .replace(/<\d+:\d+\.\d+>/g, '')      // 移除 <mm:ss.xx> 格式
-                    .replace(/<\d+:\d+>/g, '')           // 移除 <mm:ss> 格式
-                    .replace(/<.*?>/g, '')               // 移除任何其他尖括号内的内容
+                    .replace(/\[\d+:\d+\.\d+\]/g, '')
+                    .replace(/\[\d+:\d+\]/g, '')
+                    .replace(/\[.*?\]/g, '')
+                    .replace(/<\d+:\d+\.\d+>/g, '')
+                    .replace(/<\d+:\d+>/g, '')
+                    .replace(/<.*?>/g, '')
                     .trim();
                 
                 return `
@@ -378,7 +383,48 @@ class MusicPlayer {
             wrapper.innerHTML = lyricsHTML;
             this.lyricsContainer.innerHTML = '';
             this.lyricsContainer.appendChild(wrapper);
+            this.lyricsWrapper = wrapper;
+
+            // 确保滚动容器可以正常工作
+            this.lyricsElement.scrollTop = 0;
         }
+    }
+
+    // 新增方法：初始化触摸事件
+    initializeTouchEvents() {
+        if (!this.lyricsElement) return;
+
+        this.lyricsElement.addEventListener('touchstart', () => {
+            if (autoScrollTimer) {
+                clearTimeout(autoScrollTimer);
+            }
+            this.lyricsElement.classList.add('user-scrolling');
+        });
+
+        this.lyricsElement.addEventListener('touchend', () => {
+            if (autoScrollTimer) {
+                clearTimeout(autoScrollTimer);
+            }
+            
+            autoScrollTimer = setTimeout(() => {
+                this.lyricsElement.classList.remove('user-scrolling');
+                const activeLyric = this.lyricsContainer.querySelector('.lyrics-line.active');
+                if (activeLyric) {
+                    const containerRect = this.lyricsElement.getBoundingClientRect();
+                    const oneThirdHeight = Math.floor(containerRect.height / 3);
+                    const targetScrollTop = activeLyric.offsetTop - oneThirdHeight;
+                    
+                    this.lyricsElement.scrollTo({
+                        top: Math.max(0, targetScrollTop),
+                        behavior: 'smooth'
+                    });
+                }
+            }, AUTO_SCROLL_DELAY);
+        });
+
+        this.lyricsElement.addEventListener('touchmove', () => {
+            this.lyricsElement.classList.add('user-scrolling');
+        });
     }
 }
 
