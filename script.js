@@ -1,6 +1,3 @@
-let autoScrollTimer;
-const AUTO_SCROLL_DELAY = 5000; // 5秒后恢复自动滚动
-
 class MusicPlayer {
     constructor() {
         this.audio = document.getElementById('audio');
@@ -13,7 +10,6 @@ class MusicPlayer {
         this.songTitle = document.querySelector('.song-title');
         this.artist = document.querySelector('.artist');
         this.background = document.querySelector('.background');
-        this.lyricsElement = document.querySelector('.lyrics');
         this.lyricsContainer = document.querySelector('.lyrics-container');
         this.themeBtn = document.getElementById('themeBtn');
         this.currentTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -24,16 +20,14 @@ class MusicPlayer {
         this.playlist = [];
         this.currentSongIndex = 0;
         this.isPlaying = false;
-        this.lyricsWrapper = null;
 
         this.loadPlaylist().then(() => {
             if (this.playlist.length > 0) {
                 this.loadSong(this.currentSongIndex);
-                this.initializeTheme();
-                this.initializeEvents();
-                this.updateTheme();
-                this.initializeLyrics();
-                this.initializeTouchEvents();
+        this.initializeTheme();
+        this.initializeEvents();
+        this.updateTheme();
+        this.initializeLyrics();
             } else {
                 console.error('No songs in playlist');
             }
@@ -42,7 +36,14 @@ class MusicPlayer {
         });
 
         this.autoScroll = true;
+
+        // 添加鼠标悬停状态标志（电脑端）
         this.isHovering = false;
+        // 添加滚动状态标志（移动端）
+        this.isScrolling = false;
+        this.scrollTimer = null;
+        // 添加设备类型判断
+        this.isTouchDevice = 'ontouchstart' in window;
     }
 
     async loadPlaylist() {
@@ -127,28 +128,103 @@ class MusicPlayer {
             }
         });
 
-        // 歌词容器事件
-        this.lyricsContainer.addEventListener('mouseenter', () => {
-            this.isHovering = true;
-        });
+        // 电脑端鼠标事件
+        if (!this.isTouchDevice) {
+            // 鼠标悬停处理
+            this.lyricsContainer.addEventListener('mouseenter', () => {
+                this.isHovering = true;
+            });
 
-        this.lyricsContainer.addEventListener('mouseleave', () => {
-            this.isHovering = false;
-        });
+            this.lyricsContainer.addEventListener('mouseleave', () => {
+                this.isHovering = false;
+            });
 
-        // 歌词点击事件
-        this.lyricsContainer.addEventListener('click', (e) => {
-            const lyricLine = e.target.closest('.lyrics-line');
-            if (lyricLine) {
-                const time = parseFloat(lyricLine.dataset.time);
-                if (!isNaN(time)) {
-                    this.audio.currentTime = time;
-                    if (!this.isPlaying) {
-                        this.togglePlay();
+            // 电脑端点击事件
+            this.lyricsContainer.addEventListener('click', (e) => {
+                const lyricLine = e.target.closest('.lyrics-line');
+                if (lyricLine) {
+                    const time = parseFloat(lyricLine.dataset.time);
+                    if (!isNaN(time)) {
+                        this.audio.currentTime = time;
+                        if (!this.isPlaying) {
+                            this.togglePlay();
+                        }
+                        
+                        // 点击后立即滚动到对应位置
+                        const containerRect = this.lyricsContainer.getBoundingClientRect();
+                        const oneThirdHeight = containerRect.height / 3;
+                        const scrollTop = lyricLine.offsetTop - oneThirdHeight;
+                        
+                        this.lyricsContainer.scrollTo({
+                            top: scrollTop,
+                            behavior: 'smooth'
+                        });
                     }
                 }
-            }
-        });
+            });
+        }
+
+        // 移动端触摸事件
+        if (this.isTouchDevice) {
+            // 滚动事件处理
+            this.lyricsContainer.addEventListener('scroll', () => {
+                this.isScrolling = true;
+                
+                if (this.scrollTimer) {
+                    clearTimeout(this.scrollTimer);
+                }
+                
+                this.scrollTimer = setTimeout(() => {
+                    this.isScrolling = false;
+                }, 3000);
+            });
+
+            // 触摸开始事件
+            this.lyricsContainer.addEventListener('touchstart', (e) => {
+                this.touchStartY = e.touches[0].clientY;
+            });
+
+            // 触摸结束事件
+            this.lyricsContainer.addEventListener('touchend', (e) => {
+                const touchEndY = e.changedTouches[0].clientY;
+                const touchDiff = Math.abs(touchEndY - this.touchStartY);
+                
+                // 如果是点击（移动距离小于阈值）
+                if (touchDiff < 5) {
+                    const lyricLine = e.target.closest('.lyrics-line');
+                    if (lyricLine) {
+                        const time = parseFloat(lyricLine.dataset.time);
+                        if (!isNaN(time)) {
+                            // 设置音频时间
+                            this.audio.currentTime = time;
+                            
+                            // 如果没在播放，开始播放
+                            if (!this.isPlaying) {
+                                this.togglePlay();
+                            }
+                            
+                            // 重置滚动状态
+                            this.isScrolling = false;
+                            if (this.scrollTimer) {
+                                clearTimeout(this.scrollTimer);
+                            }
+                            
+                            // 立即滚动到点击的歌词位置
+                            requestAnimationFrame(() => {
+                                const containerRect = this.lyricsContainer.getBoundingClientRect();
+                                const oneThirdHeight = containerRect.height / 3;
+                                const scrollTop = lyricLine.offsetTop - oneThirdHeight;
+                                
+                                this.lyricsContainer.scrollTo({
+                                    top: scrollTop,
+                                    behavior: 'smooth'
+                                });
+                            });
+                        }
+                    }
+                }
+            });
+        }
     }
 
     loadSong(index) {
@@ -269,24 +345,16 @@ class MusicPlayer {
                         lineFill.style.width = '100%';
                     }
                 } else {
-                    // 有时间标签，计算进度
-                    const nextLine = currentLyrics[currentLyrics.indexOf(currentLine) + 1];
-                    let progress;
+                    // 使用当前行的第一个和最后一个时间标签计算进度
+                    const firstTag = timeTags[0][1].split(/[:\.]/);
+                    const lastTag = timeTags[timeTags.length - 1][1].split(/[:\.]/);
                     
-                    if (nextLine) {
-                        progress = (adjustedTime - currentLine.time) / (nextLine.time - currentLine.time);
-                    } else {
-                        // 最后一句歌词，使用时间标签计算
-                        const firstTag = timeTags[0][1].split(/[:\.]/);
-                        const lastTag = timeTags[timeTags.length - 1][1].split(/[:\.]/);
-                        
-                        const firstTime = parseInt(firstTag[0]) * 60 + parseInt(firstTag[1]) + parseInt(firstTag[2]) / 100;
-                        const lastTime = parseInt(lastTag[0]) * 60 + parseInt(lastTag[1]) + parseInt(lastTag[2]) / 100;
-                        
-                        const duration = lastTime - firstTime;
-                        const elapsedTime = adjustedTime - currentLine.time;
-                        progress = Math.min(elapsedTime / duration, 1);
-                    }
+                    const firstTime = parseInt(firstTag[0]) * 60 + parseInt(firstTag[1]) + parseInt(firstTag[2]) / 100;
+                    const lastTime = parseInt(lastTag[0]) * 60 + parseInt(lastTag[1]) + parseInt(lastTag[2]) / 100;
+                    
+                    const duration = lastTime - firstTime;
+                    const elapsedTime = adjustedTime - currentLine.time;
+                    const progress = Math.min(elapsedTime / duration, 1);
 
                     // 更新进度条
                     const lineFill = activeLine.querySelector('.line-fill');
@@ -295,18 +363,31 @@ class MusicPlayer {
                     }
                 }
                 
-                // 修改自动滚动逻辑：检查是否处于用户滚动状态
-                if (!this.isHovering && !this.lyricsElement.classList.contains('user-scrolling')) {
-                    const containerRect = this.lyricsElement.getBoundingClientRect();
-                    const oneThirdHeight = Math.floor(containerRect.height / 3);
-                    
-                    // 计算目标滚动位置，确保当前歌词行位于容器上方1/3处
-                    const targetScrollTop = activeLine.offsetTop - oneThirdHeight;
-                    
-                    this.lyricsElement.scrollTo({
-                        top: Math.max(0, targetScrollTop), // 确保不会出现负值
-                        behavior: 'smooth'
-                    });
+                // 根据设备类型判断是否自动滚动
+                if (this.isTouchDevice) {
+                    // 移动端：只在非滚动状态下自动滚动
+                    if (!this.isScrolling) {
+                        const containerRect = this.lyricsContainer.getBoundingClientRect();
+                        const oneThirdHeight = containerRect.height / 3;
+                        const scrollTop = activeLine.offsetTop - oneThirdHeight;
+                        
+                        this.lyricsContainer.scrollTo({
+                            top: scrollTop,
+                            behavior: 'smooth'
+                        });
+                    }
+                } else {
+                    // 电脑端：只在非鼠标悬停状态下自动滚动
+                    if (!this.isHovering) {
+                        const containerRect = this.lyricsContainer.getBoundingClientRect();
+                        const oneThirdHeight = containerRect.height / 3;
+                        const scrollTop = activeLine.offsetTop - oneThirdHeight;
+                        
+                        this.lyricsContainer.scrollTo({
+                            top: scrollTop,
+                            behavior: 'smooth'
+                        });
+                    }
                 }
             }
         }
@@ -361,13 +442,14 @@ class MusicPlayer {
             
             // 创建所有歌词行
             const lyricsHTML = song.lyrics.map(lyric => {
+                // 移除所有格式的时间标签
                 const cleanText = lyric.text
-                    .replace(/\[\d+:\d+\.\d+\]/g, '')
-                    .replace(/\[\d+:\d+\]/g, '')
-                    .replace(/\[.*?\]/g, '')
-                    .replace(/<\d+:\d+\.\d+>/g, '')
-                    .replace(/<\d+:\d+>/g, '')
-                    .replace(/<.*?>/g, '')
+                    .replace(/\[\d+:\d+\.\d+\]/g, '')    // 移除 [mm:ss.xx] 格式
+                    .replace(/\[\d+:\d+\]/g, '')         // 移除 [mm:ss] 格式
+                    .replace(/\[.*?\]/g, '')             // 移除任何其他方括号内的内容
+                    .replace(/<\d+:\d+\.\d+>/g, '')      // 移除 <mm:ss.xx> 格式
+                    .replace(/<\d+:\d+>/g, '')           // 移除 <mm:ss> 格式
+                    .replace(/<.*?>/g, '')               // 移除任何其他尖括号内的内容
                     .trim();
                 
                 return `
@@ -383,48 +465,7 @@ class MusicPlayer {
             wrapper.innerHTML = lyricsHTML;
             this.lyricsContainer.innerHTML = '';
             this.lyricsContainer.appendChild(wrapper);
-            this.lyricsWrapper = wrapper;
-
-            // 确保滚动容器可以正常工作
-            this.lyricsElement.scrollTop = 0;
         }
-    }
-
-    // 新增方法：初始化触摸事件
-    initializeTouchEvents() {
-        if (!this.lyricsElement) return;
-
-        this.lyricsElement.addEventListener('touchstart', () => {
-            if (autoScrollTimer) {
-                clearTimeout(autoScrollTimer);
-            }
-            this.lyricsElement.classList.add('user-scrolling');
-        });
-
-        this.lyricsElement.addEventListener('touchend', () => {
-            if (autoScrollTimer) {
-                clearTimeout(autoScrollTimer);
-            }
-            
-            autoScrollTimer = setTimeout(() => {
-                this.lyricsElement.classList.remove('user-scrolling');
-                const activeLyric = this.lyricsContainer.querySelector('.lyrics-line.active');
-                if (activeLyric) {
-                    const containerRect = this.lyricsElement.getBoundingClientRect();
-                    const oneThirdHeight = Math.floor(containerRect.height / 3);
-                    const targetScrollTop = activeLyric.offsetTop - oneThirdHeight;
-                    
-                    this.lyricsElement.scrollTo({
-                        top: Math.max(0, targetScrollTop),
-                        behavior: 'smooth'
-                    });
-                }
-            }, AUTO_SCROLL_DELAY);
-        });
-
-        this.lyricsElement.addEventListener('touchmove', () => {
-            this.lyricsElement.classList.add('user-scrolling');
-        });
     }
 }
 

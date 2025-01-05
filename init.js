@@ -18,6 +18,10 @@ function parseLRC(lrc) {
                 
                 // 提取歌词文本
                 const text = line.replace(timeRegex, '').trim();
+
+                // 清理文本中的时间标记 <mm:ss.xx>
+                // text = text.replace(/<\d{2}:\d{2}\.\d{2}>/g, '');
+
                 if (text) {
                     lyrics.push({
                         time: time,
