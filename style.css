@@ -477,6 +477,10 @@ body {
     -ms-overflow-style: none;
 }
 
+.lyrics-container::-webkit-scrollbar {
+    display: none;
+}
+
 .lyrics-wrapper {
     width: 100%;
     box-sizing: border-box;
