@@ -53,6 +53,8 @@ Thank you for your support and encouragement.
 
 ---
 
+[English](#english) | [中文](#中文)
+
 ## 中文
 
 ### 简介
